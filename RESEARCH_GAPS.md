@@ -1,6 +1,6 @@
 # UoP Rule Research Gaps
 
-This review covers the rules and every URL cited in [TAX_RULES_RESEARCH.md](./TAX_RULES_RESEARCH.md). Sources were checked on **2026-10-27**. A second pass opened official PIT, Social Insurance System, healthcare, and PPK legal texts published by Dziennik Ustaw, along with relevant official government/agency pages. The statutes support candidate values in the cited historical consolidations, but none expressly establishes all requested blocker rules as applicable to tax year 2026. No blocker below is closed by this pass; this document does not supply replacement values or authorize implementation.
+This review covers the rules and every URL cited in [TAX_RULES_RESEARCH.md](./TAX_RULES_RESEARCH.md). Sources were checked on **2026-10-27**. The third verification pass inspected current Ministry of Finance pages and current consolidated legal texts. It closed G-6 for the standard PPK legal rules as of the access date. G-1 through G-5 remain blocked: PIT amendment Dz.U. 2026 poz. 846, social-insurance amendments 2026/252, 426, 473, 734, and healthcare amendments 2025/1537, 1739 and 2026/203, 791, 972, 986, 1007 have not all been conclusively checked against their cited articles. G-7 through G-11 also remain open. This is a dated legal-source snapshot; re-check future effective amendments before later use.
 
 ## Severity key
 
@@ -8,67 +8,63 @@ This review covers the rules and every URL cited in [TAX_RULES_RESEARCH.md](./TA
 - **IMPORTANT** — Scope the feature, gather additional inputs, or expose a limitation before relying on the rule; the gap may block a particular scenario or result component.
 - **NON-BLOCKING** — Does not prevent the narrowly scoped standard UoP estimate, but must be addressed before supporting the affected user or edge case.
 
+## Blockers checked in the third pass
+
+G-1 through G-5 remain unresolved. G-6 is **closed for the standard PPK legal rule set as of 2026-10-27**. The source findings below do not cover monthly payroll advances, exceptional profiles, individual eligibility, or future legislative changes.
+
+### G-1 — OPEN: 2026 general-scale PIT brackets
+
+- **Classification:** BLOCKER
+- **Unresolved values:** Candidate 12% up to PLN 120,000 and 32% on the excess.
+- **Why evidence is insufficient:** The Ministry of Finance rates page (published/updated 2025-12-15) and [PIT Act, Dz.U. 2026 poz. 592](https://dziennikustaw.gov.pl/DU/2026/592), Art. 27(1), support the quoted scale, but Dz.U. 2026 poz. 846 amended the PIT Act effective 2026-10-01. The exact effect on Art. 27 has not been conclusively inspected. A separate Act, Dz.U. 2026 poz. 1371, is scheduled to enter into force 2026-11-05 and also requires rechecking before later use.
+- **Exact material to inspect:** [Dz.U. 2026 poz. 846](https://dziennikustaw.gov.pl/DU/2026/846), every amendment to the PIT Act, especially whether Art. 27 was changed or is affected; then verify the effective wording in the current PIT Act. Also review 2026/1371 before use after its effective date.
+- **Blocks implementation:** Yes, annual PIT and any dependent net-income estimate.
+- **Safe behavior:** Keep PIT unavailable; do not use the candidate rates until the amendment check is complete.
+
+### G-2 — OPEN: 2026 tax-free and tax-reducing amounts
+
+- **Classification:** BLOCKER
+- **Unresolved values:** Candidate PLN 3,600 annual tax-reducing amount; PLN 30,000 descriptive tax-free amount derived by dividing by 12%.
+- **Why evidence is insufficient:** Art. 27(1) of Dz.U. 2026 poz. 592 and the Ministry rates page support the candidate values, but the effect of Dz.U. 2026 poz. 846, effective 2026-10-01, on Art. 27 has not been conclusively inspected.
+- **Exact material to inspect:** [Dz.U. 2026 poz. 846](https://dziennikustaw.gov.pl/DU/2026/846), amendment text affecting the PIT Act and Art. 27; confirm the current operative clause. The PLN 30,000 figure must remain identified as a derivation, not a quoted statutory amount.
+- **Blocks implementation:** Yes, annual PIT and any dependent net-income estimate.
+- **Safe behavior:** Do not use the candidate values or derive a substitute from another year; monthly allocation separately remains G-8.
+
+### G-3 — OPEN: 2026 standard employee KUP
+
+- **Classification:** BLOCKER
+- **Unresolved values:** Candidate PLN 250/month and PLN 3,000/year for one ordinary employment relationship.
+- **Why evidence is insufficient:** The Ministry employment-income page explicitly gives 2026 values but was updated 2026-09-30, before Dz.U. 2026 poz. 846 became effective on 2026-10-01. The effect of that Act on PIT Act Art. 22 has not been conclusively inspected.
+- **Exact material to inspect:** [Dz.U. 2026 poz. 846](https://dziennikustaw.gov.pl/DU/2026/846), amendments to the PIT Act, especially Art. 22; then confirm the current operative KUP provisions and the Ministry page's applicability.
+- **Blocks implementation:** Yes, a taxable-income/PIT estimate applying standard KUP.
+- **Safe behavior:** Do not apply the candidate KUP until the post-amendment Art. 22 text is confirmed. Validate commuter and multiple-employer variants separately.
+
+### G-4 — OPEN: 2026 UoP employee social-insurance shares
+
+- **Classification:** BLOCKER
+- **Candidate values:** Pension 9.76% employee / 19.52% total; disability 1.50% employee / 8.00% total; sickness 2.45% employee / 2.45% total.
+- **Why evidence is insufficient:** [Social Insurance System Act, Dz.U. 2026 poz. 199](https://dziennikustaw.gov.pl/DU/2026/199), Arts. 16(1), 16(1b), 16(2), and 22(1)(1)–(3), supports these shares in the consolidation. However, the subsequent Acts 2026/252, 426, 473, and 734 have not all been checked against these articles.
+- **Exact material to inspect:** The cited provisions and amendment clauses in [Dz.U. 2026 poz. 252](https://dziennikustaw.gov.pl/DU/2026/252), [poz. 426](https://dziennikustaw.gov.pl/DU/2026/426), [poz. 473](https://dziennikustaw.gov.pl/DU/2026/473), and [poz. 734](https://dziennikustaw.gov.pl/DU/2026/734); confirm whether any changes apply to Arts. 16 or 22 by the 2026 date.
+- **Blocks implementation:** Yes, mandatory employee contributions and dependent net income.
+- **Safe behavior:** Do not calculate from these candidate shares until the amendment check is complete; do not substitute self-employed ZUS rates.
+
+### G-5 — OPEN: 2026 UoP health-contribution rate and base
+
+- **Classification:** BLOCKER
+- **Candidate rule:** 9% of the employee health-insurance base; the ordinary base follows the relevant pension/disability base rules and is reduced by employee-funded pension, disability, and sickness contributions withheld by the payer.
+- **Why evidence is insufficient:** The current consolidation [Health Care Services Financed from Public Funds Act, Dz.U. 2025 poz. 1461](https://dziennikustaw.gov.pl/DU/2025/1461), Arts. 79(1), 81(1), and 81(6), supports the candidate rule. The listed subsequent amendments 2025/1537, 2025/1739, 2026/203, 2026/791, 2026/972, 2026/986, and 2026/1007 have not all been checked against Arts. 79 and 81.
+- **Exact material to inspect:** The cited articles and amendment clauses in those post-consolidation Acts; determine whether the ordinary employee rate/base changed by the 2026 date.
+- **Blocks implementation:** Yes, health contribution and dependent net income.
+- **Safe behavior:** Do not calculate the employee health contribution from the candidate rule until the amendments are checked. Atypical remuneration and cross-border cases remain G-9.
+
+### G-6 — CLOSED: 2026 PPK basic contributions and state-payment rules
+
+- **Former classification:** BLOCKER
+- **Verified values/conditions:** Employee basic contribution 2% and employer basic contribution 1.5%; welcome payment PLN 250 subject to Article 31 conditions; annual state payment PLN 240 subject to Article 32 thresholds/exclusions, including the reduced-rate provisions.
+- **Official evidence:** [PPK Act, Dz.U. 2026 poz. 192](https://dziennikustaw.gov.pl/DU/2026/192), Arts. 26(1), 27(1)–(2), 31(1)–(3), and 32(1)–(6). Art. 26(1) states “1,5% wynagrodzenia”; Art. 27(1) states “2% wynagrodzenia”; Art. 31(1) states “w wysokości 250 zł” and gives participation/payment conditions; Art. 32(1) states “w wysokości 240 zł”. The only post-consolidation amendment, Dz.U. 2026 poz. 989, changes Art. 8, not these provisions.
+- **Safe boundary:** The law’s amounts and conditions are verified, but a person’s participation, contribution record, prior welcome-payment credit, and annual entitlement remain user-specific (G-10).
+
 ## Gaps requiring resolution
-
-### G-1 — 2026 general-scale PIT brackets
-
-- **Classification:** BLOCKER
-- **Unresolved rule/value:** The document lists 12% up to PLN 120,000 and 32% on the excess, but marks 2026 applicability unverified.
-- **Why evidence is insufficient:** The second pass opened the official [Dz.U. 2025 poz. 163 PIT Act PDF](https://dziennikustaw.gov.pl/DU/2025/163). Article 27(1) supports the candidate wording “do 120 000 — 12%” and “ponad 120 000 — 10 800 zł + 32% nadwyżki ponad 120 000 zł” in that consolidated text. The consolidation was published in 2025; neither it nor the inspected current basic PIT information page expressly confirms the scale for tax year 2026. Later changes effective in 2026 were not cleared.
-- **Official institution to confirm:** Ministry of Finance / National Revenue Administration (KAS); legal text from the official Journal of Laws / ELI.
-- **Exact official page or legal document to locate:** The PIT Act Article 27 and official Ministry of Finance/KAS tax-scale guidance explicitly applicable to 2026; if a 2026 consolidation is unavailable, inspect every official amending Act effective by 2026-10-27 that could affect Article 27. The 2025 text inspected is [Dz.U. 2025 poz. 163](https://dziennikustaw.gov.pl/DU/2025/163), Art. 27(1).
-- **Blocks implementation:** Yes. This rule controls annual PIT under the general scale.
-- **Safe behavior until verified:** Do not use either rate or the threshold in code, estimates, examples, or tests as a 2026 fact. Mark PIT results unavailable. Do not substitute remembered rates or carry the 2025 wording forward.
-
-### G-2 — 2026 tax-free amount and annual tax-reducing amount
-
-- **Classification:** BLOCKER
-- **Unresolved rule/value:** PLN 30,000 tax-free amount and PLN 3,600 annual tax-reducing amount are derived from the unverified PIT scale values.
-- **Why evidence is insufficient:** The inspected [Dz.U. 2025 poz. 163 PIT Act PDF](https://dziennikustaw.gov.pl/DU/2025/163), Art. 27(1), expressly says “kwota zmniejszająca podatek 3600 zł” alongside the 12% bracket, but does not state this is the amount for tax year 2026. The PLN 30,000 tax-free amount is derived as PLN 3,600 divided by 12%; it is not separately named in the inspected statutory clause. No 2026-specific confirmation was found.
-- **Official institution to confirm:** Ministry of Finance / KAS; legal text from the official Journal of Laws / ELI.
-- **Exact official page or legal document to locate:** The PIT Act Article 27 and Ministry of Finance/KAS guidance explicitly identifying the tax-free amount and tax-reducing amount applicable to 2026. The 2025 consolidation inspected is [Dz.U. 2025 poz. 163](https://dziennikustaw.gov.pl/DU/2025/163), Art. 27(1).
-- **Blocks implementation:** Yes. It affects annual PIT and may affect payroll advances.
-- **Safe behavior until verified:** Do not use these amounts or derive a substitute from another year. Suppress PIT and net-income estimates that require them.
-
-### G-3 — 2026 standard employee tax-deductible costs (KUP)
-
-- **Classification:** BLOCKER
-- **Unresolved rule/value:** PLN 250 per month / PLN 3,000 per year for the stated ordinary workplace, single-employer case; related commuter and multiple-employment variants are also not confirmed for 2026.
-- **Why evidence is insufficient:** The second pass opened [Dz.U. 2025 poz. 163](https://dziennikustaw.gov.pl/DU/2025/163), Art. 22(2)(1), which explicitly states PLN 250 monthly and a PLN 3,000 annual maximum for one employment relationship. This consolidation was published in 2025 and does not expressly establish these fixed costs for 2026. The ordinary workplace assumption and 2026 applicability therefore remain unverified.
-- **Official institution to confirm:** Ministry of Finance / KAS; current legal text from official ELI.
-- **Exact official page or legal document to locate:** The PIT Act Article 22(2)–(2b) effective for 2026 and official podatki.gov.pl/MF guidance explicitly identifying 2026 employee cost amounts and eligibility for ordinary workplace, commuting, and multiple-employer cases. The inspected 2025 text is [Dz.U. 2025 poz. 163](https://dziennikustaw.gov.pl/DU/2025/163).
-- **Blocks implementation:** Yes, for a taxable-income estimate that applies standard KUP.
-- **Safe behavior until verified:** Do not subtract PLN 250, PLN 300, or any annual cap from income. Mark the tax-base/PIT result unavailable; do not assume the user's workplace or employer-count category.
-
-### G-4 — Current employee shares of pension, disability, and sickness contributions
-
-- **Classification:** BLOCKER
-- **Unresolved rule/value:** Employee shares listed as 9.76% pension, 1.50% disability, and 2.45% sickness.
-- **Why evidence is insufficient:** The second pass opened [Dz.U. 2025 poz. 350](https://dziennikustaw.gov.pl/DU/2025/350), the consolidated Social Insurance System Act text. Articles 16 and 22 support the candidate employee shares in that text: pension is split equally from 19.52% (9.76% each), disability is 1.5% for the insured person, and sickness is 2.45% and fully financed by covered insured persons. However, the consolidation is from 2025 and does not expressly confirm that these shares apply to a UoP employee in 2026. The inspected [ZUS 2026 rates page](https://www.zus.pl/-/nowe-wysoko%C5%9Bci-sk%C5%82adek-na-ubezpieczenia-spo%C5%82eczne-w-2026-r.?redirect=%2Fo-zus%2Faktualnosci) is expressly for 2026 but its displayed schedules cover specified groups, including non-agricultural business activity; it does not establish these UoP employee shares.
-- **Official institution to confirm:** Social Insurance Institution (ZUS); legal text from the official Journal of Laws / ELI.
-- **Exact official page or legal document to locate:** A current 2026 consolidated Social Insurance System Act or Articles 16 and 22 in [Dz.U. 2025 poz. 350](https://dziennikustaw.gov.pl/DU/2025/350) together with every later official amendment effective in 2026, plus ZUS guidance explicitly applying the employee/employer split to UoP in 2026.
-- **Blocks implementation:** Yes. These values are required for an employee mandatory-contribution breakdown and affect health-contribution base as well.
-- **Safe behavior until verified:** Do not apply these percentages to user income. Mark the employee social-contribution breakdown and dependent net-income result unavailable; do not substitute the self-employed rates shown on ZUS pages.
-
-### G-5 — UoP health-contribution rate and assessment base
-
-- **Classification:** BLOCKER
-- **Unresolved rule/value:** 9% health contribution and the exact ordinary employee assessment-base rule, including the interaction with employee-financed social contributions.
-- **Why evidence is insufficient:** The previous research citation was incorrect: [Dz.U. 2024 poz. 1461](https://dziennikustaw.gov.pl/DU/2024/1461) is a regulation concerning early local elections, not the healthcare Act. The second pass corrected the reference and opened the official [Dz.U. 2024 poz. 146 healthcare Act PDF](https://dziennikustaw.gov.pl/DU/2024/146). Articles 79(1) and 81(1) state the 9% contribution and cross-reference the relevant social-insurance assessment base, subject to statutory exceptions. That consolidation covers changes only through 2024-01-15 and does not establish the rate/base after all amendments effective in 2026. The ZUS 2026 page is not an employee-specific base explanation.
-- **Official institution to confirm:** Ministry of Health / National Health Fund (NFZ) for health-insurance rules, and ZUS; legal text from official ELI.
-- **Exact official page or legal document to locate:** The healthcare Act Articles 79 and 81 as effective for 2026, beginning with the corrected official consolidated text [Dz.U. 2024 poz. 146](https://dziennikustaw.gov.pl/DU/2024/146) and all subsequent applicable official amendments, together with current NFZ/ZUS guidance specifically for UoP employees.
-- **Blocks implementation:** Yes. It affects mandatory contributions, net income, and effective-rate results.
-- **Safe behavior until verified:** Do not calculate or display an employee health-contribution amount or net income dependent on it. Do not use business-owner minima or bases as an employee proxy.
-
-### G-6 — 2026 applicability and eligibility terms for PPK contributions and state payments
-
-- **Classification:** BLOCKER
-- **Unresolved rule/value:** Standard employee contribution 2%, employer contribution 1.5%, possible reduction of the employee basic contribution to at least 0.5% where monthly remuneration from different sources is at most 1.2 times the minimum wage, welcome payment PLN 250, annual state payment PLN 240, and the eligibility conditions for state payments.
-- **Why evidence is insufficient:** The second pass opened [Dz.U. 2024 poz. 427](https://dziennikustaw.gov.pl/DU/2024/427), the PPK Act consolidated in 2024, and the [MojePPK FAQ](https://www.mojeppk.pl/faq.html). The Act supports 2% employee and 1.5% employer basic contributions (Arts. 27(1), 26(1)); PLN 250 welcome payment and its three-full-month/three-contribution-month conditions, including no duplicate credit (Art. 31); and PLN 240 annual payment with the six-times-minimum-wage threshold in Art. 32(1)–(2). The Act consolidation predates 2026; the FAQ is unversioned. Neither source expressly confirms 2026 applicability. The complete current annual-payment exception/eligibility text and individual account history were also not established.
-- **Official institution to confirm:** PFR Portal PPK / MojePPK and the official Journal of Laws / ELI.
-- **Exact official page or legal document to locate:** The PPK Act Articles 26, 27, 31, and 32 as effective in tax year 2026, including all amendments after the 2024 consolidation; current MojePPK guidance explicitly applicable to 2026 for basic rates, reduced contributions, welcome-payment eligibility, and annual-payment thresholds/exclusions.
-- **Blocks implementation:** Yes for a 2026 PPK employee/employer contribution scenario and for projecting a 2026 state payment. PPK applies only when participant enrollment/participation is established; state-payment entitlement additionally depends on contributions and prior credit history.
-- **Safe behavior until verified:** Show employee/employer PPK amounts and state payments as unavailable. Do not assume participation, include state payments, or treat the 2024 text/unversioned FAQ as 2026 rule data.
 
 ### G-7 — Current IKZE deduction and payout tax treatment
 
@@ -120,7 +116,36 @@ This review covers the rules and every URL cited in [TAX_RULES_RESEARCH.md](./TA
 - **Blocks implementation:** No for displaying the sourced annual cap as general information; yes for asserting a user's remaining limit or a personalized tax saving.
 - **Safe behavior until verified:** Show the general 2026 limit with a warning that personal available capacity and tax benefit are unknown. Do not infer the higher business-activity cap from a UoP employment selection.
 
-## URL and source audit
+## Third-pass current source audit
+
+The source audit covers the URLs in the current rule register and the historical URLs retained in the second-pass evidence log. **No non-official domains were found.** Current support and older/superseded references are distinguished below.
+
+| Official URL | Domain/status | Support, date, and limitation |
+|---|---|---|
+| `https://www.podatki.gov.pl/podatki-osobiste/pit/stawki-i-limity` | Official Ministry of Finance; opened and inspected | “Skala podatkowa” gives the 12%/PLN 120,000 and 32% scale and PLN 3,600 reduction, describes it as applying from 2022, and is dated 2025-12-15. It supports the candidate wording, but G-1/G-2 remain blocked because the effect of Dz.U. 2026 poz. 846 has not been checked. |
+| `https://www.podatki.gov.pl/podatki-osobiste/pit/informacje-podstawowe/co-jest-opodatkowane/dochody-z-pracy` | Official Ministry of Finance; opened and inspected | Employment-income page explicitly gives 2026 KUP values and was updated 2026-09-30, before Dz.U. 2026 poz. 846 took effect. Supports the candidate wording but does not close G-3. |
+| `https://dziennikustaw.gov.pl/DU/2026/592` | Official Dziennik Ustaw record/PDF; current PIT consolidation opened and inspected | Art. 27(1) supports the candidate scale/reduction; Art. 22(2) supports candidate KUP. In force with legal status 2026-04-01. Dz.U. 2026 poz. 846 amended the PIT Act effective 2026-10-01; its effect on Arts. 22 and 27 is unresolved, so these rules remain blocked. Dz.U. 2026 poz. 1371 is scheduled to enter into force 2026-11-05 and requires rechecking before later use. |
+| `https://dziennikustaw.gov.pl/DU/2026/199` | Official Dziennik Ustaw record/PDF; current Social Insurance System Act consolidation opened and inspected | Arts. 16 and 22 support candidate UoP employee/payer allocations and total rates. The post-consolidation amendments 2026/252, 426, 473, and 734 have not all been checked for those articles; G-4 remains blocked. |
+| `https://dziennikustaw.gov.pl/DU/2025/1461` | Official Dziennik Ustaw record/PDF; current healthcare Act consolidation opened and inspected | Arts. 79(1), 81(1), and 81(6) support the candidate employee rate/base. The later listed amendments 2025/1537, 2025/1739 and 2026/203, 791, 972, 986, 1007 have not all been checked for Arts. 79 and 81; G-5 remains blocked. |
+| `https://dziennikustaw.gov.pl/DU/2026/192` | Official Dziennik Ustaw record/PDF; current PPK Act consolidation opened and inspected | Arts. 26, 27, 31, and 32 support PPK rates and state-payment conditions. The sole later amendment, [Dz.U. 2026 poz. 989](https://dziennikustaw.gov.pl/DU/2026/989), changes Art. 8, not these provisions. Supports legal rules in G-6; personal entitlement remains G-10. |
+| `https://www.mojeppk.pl/faq.html` | Official PFR Portal PPK; opened and inspected | Corroborates standard contribution/state-payment headline values but is not year-versioned and does not replace the current Act or establish personal entitlement. |
+| `https://www.zus.pl/-/nowe-wysoko%C5%9Bci-sk%C5%82adek-na-ubezpieczenia-spo%C5%82eczne-w-2026-r.?redirect=%2Fo-zus%2Faktualnosci` | Official ZUS; opened and inspected | Dated 2025-12-30; supports the 2026 annual ceiling (PLN 282,600). The contribution schedules concern specified groups and are not used to establish UoP employee contribution shares. |
+| `https://www.gov.pl/web/rodzina/ikze-limit-wplat` | Official MRPiPS; opened and inspected | Explicitly states the 2026 ordinary and qualifying-business IKZE caps and cites Monitor Polski 2025 poz. 1156. Supports general limit facts only, not personal headroom or tax savings (G-11). |
+| `https://www.gov.pl/web/rodzina/ikze-indywidualne-konto-zabezpieczenia-emerytalnego` | Official MRPiPS; accessible, but last modified 2018-08-27 | Its deduction/10% treatment overview does not establish current 2026 tax conditions. Insufficient for G-7. |
+| `https://api.sejm.gov.pl/eli/acts/DU/2026/592` and corresponding 2026/199, 2025/1461, and 2026/192 metadata endpoints | Official ELI API; accessible metadata | Metadata identifies legal records and status, but it is not the article text. Use the linked Dziennik Ustaw PDF records above for statutory quotations. |
+| Historical second-pass URLs: Dz.U. 2025 poz. 163, Dz.U. 2025 poz. 350, Dz.U. 2024 poz. 146, Dz.U. 2024 poz. 427 and related ELI API records | Official sources, but superseded for current legal-status evidence | These links in the historical second-pass log remain official and support the quoted text for their own versions. They do not prove 2026 applicability. `https://eli.gov.pl/api/acts/DU/2024/1461/text.html` is an accessible but unrelated early-election regulation and is not the healthcare Act; do not rely on it. `https://eli.gov.pl/api/acts/DU/1991/350/text.html` is the historical original PIT Act, not a current consolidation. |
+
+### Link-review summary
+
+- **Non-official domains:** None found.
+- **Broken/inaccessible links:** No cited URL was confirmed as a definite broken link during the checks. The old position-1461 healthcare citation is not a broken URL; it resolves to an unrelated legal instrument. Some ELI API URLs return metadata only, not the statutory text.
+- **Sources that do not support the associated claim:** Old PIT/social/health/PPK consolidations support only their own text versions, not current 2026 applicability. The old election regulation at position 1461 does not support healthcare rules. ZUS self-employed contribution schedules do not establish UoP employee shares. MojePPK pages corroborate but do not replace the statute or establish an individual’s account history. The 2018 IKZE overview is not sufficient for current tax treatment.
+- **Sources with applicable date/effective period:** The Ministry pages provide date context (scale “from 2022”, page date 2025-12-15; KUP explicitly for 2026, updated 2026-09-30), but the October 2026 PIT amendment leaves G-1 through G-3 blocked. PPK legal text and amendment check establish G-6 for the 2026-10-27 snapshot. Social and health rates remain candidate values until the listed post-consolidation amendments are checked. The 2026/1371 PIT amendment is not effective until 2026-11-05, so later use requires rechecking.
+- **Access date:** 2026-10-27. Per-rule publication/effective information is recorded in [TAX_RULES_RESEARCH.md](./TAX_RULES_RESEARCH.md).
+
+## Historical second-pass URL audit
+
+The following table and summary record the second-pass findings only. Their statements that 2026 applicability was unverified are historical and are superseded by the third-pass status above, except for PIT G-1 through G-3, which remain blocked pending review of Dz.U. 2026 poz. 846.
 
 All linked domains in the research file are official government, public institution, or public legal-information domains. **No non-official domain was found.** A domain being official does not by itself make a particular page current or sufficient evidence for a specific rule.
 
@@ -151,4 +176,4 @@ All linked domains in the research file are official government, public institut
 
 ## Safe implementation boundary
 
-Until blockers G-1 through G-7 are resolved, the application must not generate a UoP net-income, PIT, employee-contribution, PPK, or IKZE tax-benefit estimate from these unverified values. The second pass verified candidate wording in prior-year legal consolidations but verified **none of the requested blockers for tax year 2026**. In particular, PIT values marked provisional in `TAX_RULES_RESEARCH.md` must not be used in implementation. The independently sourced IKZE 2026 annual cap and ZUS 2026 annual ceiling may be retained as research facts with their source and period metadata, but must not be used to imply that the dependent calculation is complete.
+G-6 is closed for the standard PPK legal rules as of 2026-10-27 and may be used as a rule input for that dated scope. G-1 through G-5 remain blockers; do not calculate PIT, employee social contributions, health contributions, or dependent net income until their post-consolidation amendment checks are complete. The separate G-7 IKZE tax-treatment blocker, monthly payroll withholding (G-8), atypical profiles (G-9), and individual PPK/IKZE entitlement (G-10/G-11) also remain open. Re-check the legislation before use after 2026-11-05, when Dz.U. 2026 poz. 1371 is scheduled to enter into force. The second-pass PIT values remain provisional pending the 2026/846 check; current-source findings do not override the unresolved amendments.

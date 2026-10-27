@@ -12,13 +12,16 @@ import type { VerifiedRule } from "../rules/types";
 
 function syntheticRule(value: number, unit: string): VerifiedRule<number> {
   return {
+    id: `test.${unit}`,
+    legalBasis: "Synthetic test fixture; not a production rule",
     value,
     unit,
     taxYear: 2026,
     effectivePeriod: "test fixture only",
+    effectiveFrom: "2026-01-01",
     sourceUrl: "https://example.invalid/test-fixture",
     accessedAt: "test fixture only",
-    verificationStatus: "verified",
+    verificationStatus: "VERIFIED_CURRENT",
   };
 }
 
@@ -51,9 +54,22 @@ describe("employee social insurance", () => {
 });
 
 describe("PPK contributions", () => {
-  it("keeps employee and employer calculations unavailable without verified rates", () => {
+  it("calculates standard employee and employer basic contributions from verified rules", () => {
     expect(calculatePpkEmployeeContribution(1_000, 2026).status).toBe("unavailable");
     expect(calculatePpkEmployerContribution(1_000, 2026).status).toBe("unavailable");
+    const employee = calculatePpkEmployeeContribution(
+      15_000,
+      2026,
+      rules2026.ppkEmployeeBasicContribution,
+    );
+    const employer = calculatePpkEmployerContribution(
+      15_000,
+      2026,
+      rules2026.ppkEmployerBasicContribution,
+    );
+    expect(employee).toMatchObject({ status: "available", value: 300 });
+    expect(employer).toMatchObject({ status: "available", value: 225 });
+    expect(employee).not.toEqual(employer);
   });
 
   it("calculates contributions only from an explicitly supplied verified rule", () => {
@@ -69,11 +85,59 @@ describe("PPK contributions", () => {
 
   it("does not assume eligibility for state payments", () => {
     expect(calculatePpkStateContribution(undefined, 2026).status).toBe("unavailable");
-    expect(calculatePpkStateContribution(true, 2026).status).toBe("unavailable");
+    expect(
+      calculatePpkStateContribution(
+        true,
+        2026,
+        rules2026.ppkWelcomePayment,
+      ),
+    ).toMatchObject({ status: "available", value: 250 });
+    expect(
+      calculatePpkStateContribution(
+        true,
+        2026,
+        rules2026.ppkAnnualStatePayment,
+      ),
+    ).toMatchObject({ status: "available", value: 240 });
     expect(calculatePpkStateContribution(false, 2026)).toMatchObject({
       status: "available",
       value: 0,
     });
+  });
+
+  it("requires eligible status and verified rules for state payments", () => {
+    expect(
+      calculatePpkStateContribution(
+        undefined,
+        2026,
+        rules2026.ppkWelcomePayment,
+      ),
+    ).toMatchObject({
+      status: "unavailable",
+      message: "Eligibility requires verification",
+    });
+    expect(
+      calculatePpkStateContribution(
+        true,
+        2026,
+        { ...rules2026.ppkWelcomePayment, verificationStatus: "SOURCE_UNAVAILABLE" },
+      ).status,
+    ).toBe("unavailable");
+  });
+
+  it("keeps employee and employer amounts as separate results", () => {
+    const employee = calculatePpkEmployeeContribution(
+      1_000,
+      2026,
+      rules2026.ppkEmployeeBasicContribution,
+    );
+    const employer = calculatePpkEmployerContribution(
+      1_000,
+      2026,
+      rules2026.ppkEmployerBasicContribution,
+    );
+    expect(employee).toMatchObject({ value: 20 });
+    expect(employer).toMatchObject({ value: 15 });
   });
 });
 
@@ -109,6 +173,21 @@ describe("IKZE contribution projection", () => {
     ).toBe("unavailable");
   });
 
+  it("does not project against an unverified annual limit", () => {
+    expect(
+      calculateIkzeContributionProjection(
+        100,
+        1,
+        0,
+        { ...rules2026.ikzeAnnualContributionLimit, verificationStatus: "SOURCE_UNAVAILABLE" },
+        2026,
+      ),
+    ).toEqual({
+      status: "unavailable",
+      message: "The IKZE annual limit is unavailable until its rule is verified.",
+    });
+  });
+
   it("rejects an invalid remaining-month count", () => {
     expect(() =>
       calculateIkzeContributionProjection(
@@ -122,14 +201,19 @@ describe("IKZE contribution projection", () => {
   });
 
   it("includes source and effective-period metadata on every stored rule", () => {
-    for (const rule of Object.values(rules2026).filter((value) => typeof value === "object")) {
+    for (const rule of Object.values(rules2026).filter(
+      (value) => typeof value === "object" && !Array.isArray(value),
+    )) {
       expect(rule).toMatchObject({
         unit: expect.any(String),
         taxYear: 2026,
         effectivePeriod: expect.any(String),
-        sourceUrl: expect.stringMatching(/^https:\/\/(www\.)?(gov\.pl|zus\.pl)/),
+        sourceUrl: expect.stringMatching(/^https:\/\/(www\.)?(gov\.pl|zus\.pl|dziennikustaw\.gov\.pl)/),
         accessedAt: "2026-10-27",
-        verificationStatus: "verified",
+        verificationStatus: "VERIFIED_CURRENT",
+        id: expect.any(String),
+        legalBasis: expect.any(String),
+        effectiveFrom: expect.any(String),
       });
     }
   });

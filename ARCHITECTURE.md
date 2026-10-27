@@ -79,6 +79,10 @@ src/
     tax.ts
     pension.ts
     projections.ts
+  regulatory/
+    types.ts
+    index.ts
+    index.test.ts
   services/
     calculateEstimate.ts
   test/
@@ -124,6 +128,8 @@ Keep tax, ZUS, and pension rule values separate from calculation logic, in typed
 
 Use the rule set applicable to the selected calculation period, not merely the newest data in the repository. If no verified rule applies, return an explicit unavailable/uncertain result instead of substituting a guessed value. Keep source metadata attached to each rule so the interface can show which references support each result. A rule change should be reviewable as a normal code change, with its source and effective dates updated together.
 
+The current 2026 rule set activates only the traceably verified PPK basic contributions and conditional state-payment values plus previously stored sourced limits. Rules still blocked in [RESEARCH_GAPS.md](./RESEARCH_GAPS.md) are not activated. Each active rule record includes a stable ID, legal basis, value/unit, effective period, source URL, access date, and verification state.
+
 ### Results and explanations
 
 The results view presents:
@@ -160,6 +166,18 @@ Potential future agent responsibilities:
 
 AI output should be labeled as explanatory, grounded in traceable references, and treated as potentially fallible. If evidence is missing or conflicting, the agent should state that uncertainty and defer to the verified deterministic result or report that no reliable estimate is available. The application must continue to work when AI is disabled or unavailable.
 
+### Regulatory update agent boundary
+
+The current `src/regulatory/` module defines typed source catalogues, quick/deep check requests, rule-status transitions, metadata comparison, rollback guards, and an update-service interface. The local demonstration adapter makes **no external requests** and reports that live retrieval is unavailable. It never fabricates a change report. The request contract contains only source IDs, general rule topics, employment type, legal references, and the last successful verification date; it has no fields for personal financial/profile data.
+
+Quick/deep checks must be presented for explicit approval only after listing source categories, external access, last verification date, resource level, and possible token use. Candidate changes require evidence, human review/approval, successful regression tests, activation as a new version, and preservation of the prior version for rollback. Source changes, page metadata, and news alone never activate a rule.
+
+Secure live retrieval requires a backend service. The browser must not hold service credentials or send a user's profile to official regulatory websites. A future backend must validate an allowlisted source catalog, minimize request data, handle rate limits and inaccessible sources explicitly, treat retrieved content as untrusted, preserve evidence and content fingerprints, and return candidate evidence for human review without changing the active rule set. See [REGULATORY_UPDATE_AGENT.md](./REGULATORY_UPDATE_AGENT.md).
+
+### Transparency and consent
+
+The user interface presents an AI transparency banner, an accessible expandable limitations section near the results, a persistent footer notice, and an unselected consent checkbox gating calculations. Consent is a UX acknowledgement only; it does not certify result correctness. Calculations remain deterministic TypeScript. AI research/explanation functions, if later added, must not write or activate rule data.
+
 ## Local development and verification
 
 Once the project is scaffolded, a beginner should be able to open the repository in VS Code, install the project dependencies, start the Vite development server, and open the local address it prints. The README should document the exact commands for the chosen package manager.
@@ -169,3 +187,5 @@ Before showing a calculation change, run the focused Vitest tests for its pure f
 ## Initial scope boundaries
 
 The first version is a local, single-user web application. It does not need authentication, cloud storage, a database, online tax-rule synchronization, or AI. It must not claim comprehensive tax coverage until the relevant rule data, eligibility conditions, and deterministic calculations have been implemented and verified against official sources.
+
+The current implementation must not calculate PIT, health contributions, final net salary, IKZE tax relief, or social-insurance amounts from rules still marked blocked. PPK welcome and annual state payments stay conditional on explicit user confirmation; the frontend regulatory panel cannot perform a live Quick or Deep check.

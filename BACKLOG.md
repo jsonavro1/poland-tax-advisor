@@ -4,7 +4,61 @@ This backlog translates [REQUIREMENTS.md](./REQUIREMENTS.md) and [ARCHITECTURE.m
 
 ## Current application baseline
 
-The repository currently contains a React, TypeScript, and Vite frontend with a responsive profile questionnaire. It collects core income and personal details and provides optional PPK, IKE, and IKZE participation and contribution fields. Submitting the form only displays a notice; there are no tax rules, calculation functions, result views, automated tests, or AI features yet.
+The repository contains a React, TypeScript, and Vite frontend with a profile questionnaire, versioned 2026 rule data, deterministic calculation functions, result sections, and Vitest coverage. Standard PPK participant/employer contributions are calculated only for gross UoP income when PPK participation is confirmed. State payments require user-confirmed eligibility; PIT, employee social/health amounts, net income, and IKZE tax relief remain unavailable. An opt-in regulatory update demonstration supports Skip/Quick/Deep flows, but does not perform live retrieval. AI transparency notices and consent gating are present; no AI arithmetic or production rule updates occur.
+
+## Combined product increment — implemented scope
+
+### Epic CI-1 — Activate verified standard PPK rules
+
+**Goal:** Use only the PPK values marked verified in the research record, with source traceability and conditional state payments.
+
+#### Story CI-1.1 — Calculate standard employee and employer PPK contributions
+
+**Acceptance criteria**
+
+- Rule records include stable IDs, values/units, period, legal basis, official URL, access date, and verification state.
+- Gross UoP PPK remuneration of PLN 15,000 produces PLN 300 employee and PLN 225 employer basic contributions, shown separately.
+- Net income, unsupported employment types, and unknown PPK participation do not produce PPK amount estimates.
+- PLN 250 welcome and PLN 240 annual payments are never presumed; unknown eligibility displays “Eligibility requires verification”.
+- G-1 through G-5 and G-7 remain blocked; no PIT, health, final net, or IKZE tax relief calculation is activated.
+
+### Epic CI-2 — Add a safe opt-in regulatory update workflow
+
+**Goal:** Present sources and governance steps while honestly identifying the frontend-only live-retrieval limitation.
+
+#### Story CI-2.1 — Preview and approve regulatory checks
+
+**Acceptance criteria**
+
+- Startup shows rule-set version, last successful verification date, current status, and covered sources.
+- Skip makes no external request and reports that no check was performed for the session.
+- Quick and Deep choices present the exact source categories, last verification date, external access, Medium/High resource category, possible token use, and no-auto-activation warning before explicit approval.
+- Demonstration mode performs no live requests, fabricates no findings, and says secure backend access is required.
+- Request types exclude personal income, residency, citizenship, family, contributions, and savings data.
+
+#### Story CI-2.2 — Govern candidate changes and preserve rollback
+
+**Acceptance criteria**
+
+- Rule status transitions prevent direct activation from detection and require review, human approval, and passing regression tests.
+- Metadata-only differences (such as title or modification-date changes) do not create an activatable rule change.
+- Source unavailability never overwrites an active verified rule.
+- Activation retains the previous rule-set snapshot for rollback.
+- Candidate-change fields support evidence, dates, affected rules, old/proposed values, impact, confidence, blocking status, review, and approval metadata.
+
+### Epic CI-3 — Add transparency and user consent
+
+**Goal:** Make AI assistance, limitations, and user responsibility visible without dark patterns.
+
+#### Story CI-3.1 — Disclose AI limitations and gate calculations on consent
+
+**Acceptance criteria**
+
+- The exact prominent AI banner and full footer notice appear in the application.
+- Results include an expandable “AI transparency and limitations” section.
+- Consent is unselected by default, required before calculation, and does not imply correctness or remove author responsibility.
+- The application has no repeated navigation consent interruption and does not visually minimize notices.
+- Tests cover banner/footer presence, default checkbox state, disabled submission before consent, and calculation availability after consent.
 
 ## Priority definitions
 

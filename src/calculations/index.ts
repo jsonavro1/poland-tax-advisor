@@ -34,6 +34,9 @@ function contribution(
   if (!rate) {
     return unavailable(`${name} is unavailable until its rule is verified.`);
   }
+  if (rate.verificationStatus !== "VERIFIED_CURRENT") {
+    return unavailable(`${name} is unavailable until its rule is verified.`);
+  }
   if (rate.unit !== "fraction") {
     throw new RangeError(`${name} rule must use the fraction unit.`);
   }
@@ -153,7 +156,7 @@ export function calculatePpkStateContribution(
   verifiedPayment?: VerifiedRule<number>,
 ): CalculationResult<number> {
   if (participantIsEligible === undefined) {
-    return unavailable("PPK state-payment eligibility is not established.");
+    return unavailable("Eligibility requires verification");
   }
   if (!participantIsEligible) {
     return {
@@ -167,6 +170,9 @@ export function calculatePpkStateContribution(
   }
   if (verifiedPayment.taxYear !== taxYear) {
     return unavailable(`No verified PPK state-payment rule is available for ${taxYear}.`);
+  }
+  if (verifiedPayment.verificationStatus !== "VERIFIED_CURRENT") {
+    return unavailable("PPK state-payment rules are unavailable until verified.");
   }
   if (verifiedPayment.unit !== "PLN") {
     throw new RangeError("PPK state payment must use PLN.");
@@ -200,6 +206,9 @@ export function calculateIkzeContributionProjection(
   }
   if (annualLimit.unit !== "PLN per calendar year") {
     throw new RangeError("The IKZE annual limit must use PLN per calendar year.");
+  }
+  if (annualLimit.verificationStatus !== "VERIFIED_CURRENT") {
+    return unavailable("The IKZE annual limit is unavailable until its rule is verified.");
   }
   if (annualLimit.taxYear !== taxYear) {
     return unavailable(`No verified IKZE annual limit is available for ${taxYear}.`);
