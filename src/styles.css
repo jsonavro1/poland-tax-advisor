@@ -560,6 +560,113 @@ p {
   font-size: 9px;
 }
 
+.projection-inputs {
+  display: grid;
+  gap: 8px;
+  margin-top: 21px;
+  padding: 16px;
+  border: 1px solid #e9ece7;
+  border-radius: 9px;
+  background: #fcfdfb;
+}
+
+.projection-inputs > p {
+  margin: 0;
+}
+
+.results-card {
+  margin-top: 26px;
+  padding-top: 25px;
+  border-top: 1px solid #e8ece6;
+}
+
+.results-card h2 {
+  margin: 8px 0;
+  color: #293d33;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+
+.results-intro,
+.result-detail {
+  color: #78827d;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.results-intro {
+  margin-bottom: 20px;
+}
+
+.result-group {
+  padding: 16px 0;
+  border-top: 1px solid #eef0ec;
+}
+
+.result-group h3 {
+  margin: 0 0 10px;
+  color: #34483b;
+  font-size: 13px;
+}
+
+.result-group p {
+  margin: 7px 0;
+  color: #59685f;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.result-group .result-detail {
+  color: #818b84;
+}
+
+.projection-table {
+  overflow: hidden;
+  border: 1px solid #e8ece6;
+  border-radius: 7px;
+}
+
+.projection-row {
+  display: grid;
+  grid-template-columns: 0.6fr 1.4fr 1.4fr;
+  gap: 10px;
+  padding: 10px;
+  border-top: 1px solid #eef0ec;
+  color: #59685f;
+  font-size: 10px;
+}
+
+.projection-row:first-child {
+  border-top: 0;
+}
+
+.projection-header {
+  background: #f5f8f3;
+  color: #3e5546;
+  font-weight: 700;
+}
+
+.source-list {
+  display: grid;
+  gap: 8px;
+  padding-left: 18px;
+  color: #647269;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.source-list a {
+  color: #396e56;
+  overflow-wrap: anywhere;
+}
+
+.results-disclaimer {
+  padding-top: 10px;
+  border-top: 1px solid #eef0ec;
+  font-size: 10px !important;
+}
+
 .optional-label {
   color: #98a09a;
   font-size: 9px;
@@ -776,6 +883,10 @@ p {
     align-items: end;
   }
 
+  .results-card {
+    margin-top: 22px;
+  }
+
   .savings-card-heading {
     grid-column: 1 / -1;
   }
@@ -861,6 +972,13 @@ p {
 
   .field-grid {
     grid-template-columns: 1fr;
+  }
+
+  .projection-row {
+    grid-template-columns: 0.4fr 1fr 1fr;
+    gap: 5px;
+    padding: 8px 6px;
+    font-size: 9px;
   }
 
   .field-wide {

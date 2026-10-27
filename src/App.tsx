@@ -1,11 +1,56 @@
 import { useState, type FormEvent } from "react";
+import {
+  calculateEmployeeSocialInsurance,
+  calculateIkzeContributionProjection,
+  calculatePpkEmployeeContribution,
+  calculatePpkEmployerContribution,
+  calculatePpkStateContribution,
+  projectMonthlySavings,
+} from "./calculations";
+import { rules2026 } from "./rules";
+
+type SubmittedProfile = {
+  monthlyIncome: number;
+  incomeType: string;
+  employmentType: string;
+  annualBaseUsed: number | null;
+  ppkStatus: string;
+  ikzeStatus: string;
+  ppkContribution: number | null;
+  ikzeContribution: number | null;
+  ikzeBusinessActivity: string;
+  monthsRemaining: number | null;
+  ikzeContributedToDate: number | null;
+  savingsContribution: number | null;
+  annualReturnPercent: number | null;
+};
+
+function optionalNumber(data: FormData, name: string) {
+  const value = data.get(name);
+  return value === null || value === "" ? null : Number(value);
+}
 
 function App() {
-  const [submitted, setSubmitted] = useState(false);
+  const [profile, setProfile] = useState<SubmittedProfile | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    const data = new FormData(event.currentTarget);
+    setProfile({
+      monthlyIncome: Number(data.get("monthlyIncome")),
+      incomeType: String(data.get("incomeType")),
+      employmentType: String(data.get("employmentType")),
+      annualBaseUsed: optionalNumber(data, "annualBaseUsed"),
+      ppkStatus: String(data.get("ppkStatus") ?? ""),
+      ikzeStatus: String(data.get("ikzeStatus") ?? ""),
+      ppkContribution: optionalNumber(data, "ppkContribution"),
+      ikzeContribution: optionalNumber(data, "ikzeContribution"),
+      ikzeBusinessActivity: String(data.get("ikzeBusinessActivity") ?? ""),
+      monthsRemaining: optionalNumber(data, "monthsRemaining"),
+      ikzeContributedToDate: optionalNumber(data, "ikzeContributedToDate"),
+      savingsContribution: optionalNumber(data, "savingsContribution"),
+      annualReturnPercent: optionalNumber(data, "annualReturnPercent"),
+    });
   }
 
   return (
@@ -65,19 +110,6 @@ function App() {
               <span className="form-icon" aria-hidden="true">✳</span>
             </div>
 
-            {submitted && (
-              <div className="notice" role="status">
-                <span className="notice-icon" aria-hidden="true">✓</span>
-                <div>
-                  <strong>Your profile is ready for the next step.</strong>
-                  <p>
-                    This first version collects your details only. Tax,
-                    contribution, and pension calculations are not available yet.
-                  </p>
-                </div>
-              </div>
-            )}
-
             <form onSubmit={handleSubmit}>
               <fieldset className="form-section">
                 <legend>
@@ -130,6 +162,26 @@ function App() {
                       <option value="umowa-zlecenie">Contract of mandate (Umowa Zlecenie)</option>
                       <option value="b2b">Business-to-business (B2B)</option>
                     </select>
+                  </label>
+                  <label className="field field-wide" htmlFor="annual-base-used">
+                    <span className="field-label">
+                      Pension/disability contribution base already used in 2026{" "}
+                      <span className="optional-label">optional</span>
+                    </span>
+                    <span className="input-with-suffix">
+                      <input
+                        id="annual-base-used"
+                        name="annualBaseUsed"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="Not provided"
+                      />
+                      <span className="input-suffix">PLN</span>
+                    </span>
+                    <span className="field-hint">
+                      Enter the cumulative base before the current month; include relevant base from other payers if known.
+                    </span>
                   </label>
                 </div>
               </fieldset>
@@ -231,20 +283,66 @@ function App() {
                 <div className="savings-grid">
                   <SavingsField name="ppk" title="PPK" description="Employee capital plan" />
                   <SavingsField name="ike" title="IKE" description="Individual retirement account" />
-                  <SavingsField name="ikze" title="IKZE" description="Individual retirement security account" />
+                  <SavingsField
+                    name="ikze"
+                    title="IKZE"
+                    description="Individual retirement security account"
+                  />
+                </div>
+                <div className="projection-inputs">
+                  <p className="field-label">Savings projection assumptions</p>
+                  <p className="field-hint">
+                    These inputs create a generic savings scenario; they are not treated as verified PPK or IKZE rules.
+                  </p>
+                  <div className="field-grid">
+                    <label className="field" htmlFor="savings-contribution">
+                      <span className="field-label">
+                        Monthly amount to project <span className="optional-label">optional</span>
+                      </span>
+                      <span className="input-with-suffix">
+                        <input
+                          id="savings-contribution"
+                          name="savingsContribution"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="Not provided"
+                        />
+                        <span className="input-suffix">PLN</span>
+                      </span>
+                    </label>
+                    <label className="field" htmlFor="annual-return">
+                      <span className="field-label">
+                        Assumed annual return <span className="optional-label">optional</span>
+                      </span>
+                      <span className="input-with-suffix">
+                        <input
+                          id="annual-return"
+                          name="annualReturnPercent"
+                          type="number"
+                          min="-99.99"
+                          max="100"
+                          step="0.01"
+                          placeholder="Not provided"
+                        />
+                        <span className="input-suffix">%</span>
+                      </span>
+                    </label>
+                  </div>
                 </div>
               </fieldset>
 
               <div className="form-footer">
                 <p>
-                  Your answers are not sent to an account or service.
+                  Calculations run locally in your browser. Your answers are not sent to an account or service.
                 </p>
                 <button className="submit-button" type="submit">
-                  Continue
+                  Show available results
                   <span aria-hidden="true">→</span>
                 </button>
               </div>
             </form>
+            {profile && <Results profile={profile} />}
           </section>
 
           <aside className="sidebar">
@@ -269,9 +367,9 @@ function App() {
               <div>
                 <h3>Early version</h3>
                 <p>
-                  Calculations and personalized recommendations are not
-                  available yet. No financial results will be shown in this
-                  version.
+                  PIT, health-insurance, verified PPK, and personalized tax
+                  results are unavailable. Only sourced rules and user-entered
+                  savings assumptions are used below.
                 </p>
               </div>
             </section>
@@ -329,7 +427,226 @@ function SavingsField({ name, title, description }: SavingsFieldProps) {
           <span className="input-suffix">PLN</span>
         </span>
       </label>
+      {name === "ikze" && (
+        <>
+          <label className="field" htmlFor="ikze-business-activity">
+            <span className="field-label">Qualifying business activity</span>
+            <select id="ikze-business-activity" name="ikzeBusinessActivity" defaultValue="">
+              <option value="">Not provided</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+              <option value="unsure">I'm not sure</option>
+            </select>
+          </label>
+          <label className="field" htmlFor="months-remaining">
+            <span className="field-label">Planned monthly payments remaining in 2026</span>
+            <input
+              id="months-remaining"
+              name="monthsRemaining"
+              type="number"
+              min="0"
+              max="12"
+              step="1"
+              placeholder="Not provided"
+            />
+          </label>
+          <label className="field" htmlFor="ikze-contributed-to-date">
+            <span className="field-label">IKZE paid in 2026 so far</span>
+            <span className="input-with-suffix">
+              <input
+                id="ikze-contributed-to-date"
+                name="ikzeContributedToDate"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Not provided"
+              />
+              <span className="input-suffix">PLN</span>
+            </span>
+          </label>
+        </>
+      )}
     </div>
+  );
+}
+
+function Results({ profile }: { profile: SubmittedProfile }) {
+  const savingsContribution = profile.savingsContribution;
+  const annualReturnPercent = profile.annualReturnPercent;
+  const socialInsurance =
+    profile.employmentType === "uop" && profile.incomeType === "gross"
+      ? calculateEmployeeSocialInsurance(
+          profile.monthlyIncome,
+          profile.annualBaseUsed ?? undefined,
+          2026,
+        )
+      : {
+          status: "unavailable" as const,
+          message: "Available only for a gross UoP profile after employee rates are verified.",
+        };
+  const ppkEmployee = calculatePpkEmployeeContribution(profile.monthlyIncome, 2026);
+  const ppkEmployer = calculatePpkEmployerContribution(profile.monthlyIncome, 2026);
+  const ppkState = calculatePpkStateContribution(undefined, 2026);
+  const ikzeProjection =
+    profile.ikzeBusinessActivity === "no" &&
+    profile.ikzeContribution !== null &&
+    profile.monthsRemaining !== null &&
+    profile.ikzeContributedToDate !== null
+      ? calculateIkzeContributionProjection(
+          profile.ikzeContribution,
+          profile.monthsRemaining,
+          profile.ikzeContributedToDate,
+          rules2026.ikzeAnnualContributionLimit,
+          2026,
+        )
+      : null;
+  const savingsProjections =
+    savingsContribution !== null && annualReturnPercent !== null
+      ? [1, 5, 10, 15, 20].map((years) =>
+          projectMonthlySavings(
+            savingsContribution,
+            annualReturnPercent,
+            years,
+          ),
+        )
+      : null;
+
+  return (
+    <section className="results-card" aria-labelledby="results-title" aria-live="polite">
+      <p className="step-label">DETERMINISTIC RESULTS</p>
+      <h2 id="results-title">Your available results</h2>
+      <p className="results-intro">
+        Unsupported calculations remain unavailable; no PIT rates or unverified contribution rules are used.
+      </p>
+
+      <section className="result-group">
+        <h3>Employee contributions</h3>
+        <p>
+          <strong>Monthly income entered:</strong> PLN {profile.monthlyIncome.toFixed(2)}{" "}
+          ({profile.incomeType}; {profile.employmentType})
+        </p>
+        <p>
+          <strong>UoP social insurance:</strong>{" "}
+          {socialInsurance.status === "unavailable"
+            ? "Unavailable until verified"
+            : `PLN ${socialInsurance.value.total.toFixed(2)}`}
+        </p>
+        {socialInsurance.status === "unavailable" && <p className="result-detail">{socialInsurance.message}</p>}
+        <p><strong>Health contribution and net income:</strong> Unavailable until verified</p>
+        <p><strong>PIT and effective rate:</strong> Unavailable until verified</p>
+      </section>
+
+      <section className="result-group">
+        <h3>Employer and PPK contributions</h3>
+        <p>
+          <strong>PPK employee contribution:</strong>{" "}
+          {ppkEmployee.status === "unavailable"
+            ? "Unavailable until verified"
+            : `PLN ${ppkEmployee.value.toFixed(2)}`}
+        </p>
+        <p>
+          <strong>PPK employer contribution:</strong>{" "}
+          {ppkEmployer.status === "unavailable"
+            ? "Unavailable until verified"
+            : `PLN ${ppkEmployer.value.toFixed(2)}`}
+        </p>
+        <p>
+          <strong>PPK state payments:</strong>{" "}
+          {ppkState.status === "unavailable"
+            ? "Unavailable until verified"
+            : `PLN ${ppkState.value.toFixed(2)}`}
+        </p>
+      </section>
+
+      <section className="result-group">
+        <h3>IKZE contribution scenario</h3>
+        {ikzeProjection?.status === "available" ? (
+          <>
+            <p>
+              Planned contributions within the verified 2026 annual limit:{" "}
+              <strong>PLN {ikzeProjection.value.allowedAdditionalContribution.toFixed(2)}</strong>
+            </p>
+            <p className="result-detail">
+              Projected 2026 total including the amount you entered as already paid: PLN{" "}
+              {ikzeProjection.value.projectedYearTotal.toFixed(2)}. This is not a tax-saving or investment estimate.
+            </p>
+            <p className="result-detail">
+              Uses the ordinary 2026 limit because you indicated no qualifying business activity; remaining months and prior deposits are your inputs.
+            </p>
+          </>
+        ) : (
+          <p>
+            {ikzeProjection?.status === "unavailable"
+              ? `Unavailable: ${ikzeProjection.message}`
+              : "Unavailable until the required personal inputs are provided."}
+          </p>
+        )}
+      </section>
+
+      <section className="result-group">
+        <h3>Retirement savings projections</h3>
+        {savingsProjections &&
+        savingsContribution !== null &&
+        annualReturnPercent !== null ? (
+          <>
+            <p className="result-detail">
+              Generic savings scenario only. Uses a PLN 0 starting balance, the monthly amount and annual return you entered; it does not apply PPK/IKZE rules or future contribution limits.
+            </p>
+            <p className="result-detail">
+              Monthly amount: PLN {savingsContribution.toFixed(2)}; annual return assumption: {annualReturnPercent.toFixed(2)}% effective, with deposits at each month-end.
+            </p>
+            <div className="projection-table" role="table" aria-label="Savings projections">
+              <div className="projection-row projection-header" role="row">
+                <span role="columnheader">Years</span>
+                <span role="columnheader">Contributions</span>
+                <span role="columnheader">Projected balance</span>
+              </div>
+              {savingsProjections.map((projection) =>
+                projection.status === "available" ? (
+                  <div className="projection-row" role="row" key={projection.value.years}>
+                    <span role="cell">{projection.value.years}</span>
+                    <span role="cell">PLN {projection.value.contributions.toFixed(2)}</span>
+                    <span role="cell">PLN {projection.value.projectedBalance.toFixed(2)}</span>
+                  </div>
+                ) : null,
+              )}
+            </div>
+          </>
+        ) : (
+          <p>Unavailable until a monthly savings amount and an explicit annual return assumption are provided.</p>
+        )}
+      </section>
+
+      <section className="result-group">
+        <h3>Verified rules, assumptions, and sources</h3>
+        <ul className="source-list">
+          <li>
+            2026 IKZE general annual limit: PLN{" "}
+            {rules2026.ikzeAnnualContributionLimit.value.toLocaleString("pl-PL")} —{" "}
+            <a href={rules2026.ikzeAnnualContributionLimit.sourceUrl} target="_blank" rel="noreferrer">
+              MRPiPS official limit notice
+            </a>{" "}
+            (effective {rules2026.ikzeAnnualContributionLimit.effectivePeriod}; verified; accessed{" "}
+            {rules2026.ikzeAnnualContributionLimit.accessedAt}).
+          </li>
+          <li>
+            2026 pension/disability annual base ceiling: PLN{" "}
+            {rules2026.socialInsuranceAnnualCeiling.value.toLocaleString("pl-PL")} —{" "}
+            <a href={rules2026.socialInsuranceAnnualCeiling.sourceUrl} target="_blank" rel="noreferrer">
+              ZUS official rates and limits
+            </a>{" "}
+            (effective {rules2026.socialInsuranceAnnualCeiling.effectivePeriod}; verified; accessed{" "}
+            {rules2026.socialInsuranceAnnualCeiling.accessedAt}). This ceiling alone does not enable contribution calculations.
+          </li>
+          <li>
+            Rule-set version: {rules2026.version}. No PIT, health contribution, employee social rates, PPK rates, or PPK state-payment rules are applied because they remain unverified in the research gaps.
+          </li>
+        </ul>
+        <p className="results-disclaimer">
+          Estimates and user-defined scenarios only; this application does not replace professional tax, legal, or investment advice.
+        </p>
+      </section>
+    </section>
   );
 }
 
