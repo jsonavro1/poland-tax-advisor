@@ -76,6 +76,9 @@ describe("candidate governance and rollback", () => {
         regressionTestsPassed: true,
       }),
     ).toBe("ACTIVE");
+    expect(() =>
+      transitionCandidateStatus("UNKNOWN_STATUS" as any, "VERIFIED_CURRENT"),
+    ).toThrow(/not recognized/i);
   });
 
   it("does not apply unavailable source results and retains prior rules for rollback", () => {

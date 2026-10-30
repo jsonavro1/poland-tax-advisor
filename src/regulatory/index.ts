@@ -166,6 +166,9 @@ export function transitionCandidateStatus(
   next: RegulatoryCheckStatus,
   controls: { humanApproved?: boolean; regressionTestsPassed?: boolean } = {},
 ): RegulatoryCheckStatus {
+  if (!Object.prototype.hasOwnProperty.call(allowedTransitions, current)) {
+    throw new Error(`Candidate status ${current} is not recognized.`);
+  }
   if (!allowedTransitions[current].includes(next)) {
     throw new Error(`Candidate status cannot transition from ${current} to ${next}.`);
   }
